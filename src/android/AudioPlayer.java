@@ -19,10 +19,10 @@
 package org.apache.cordova.media;
 
 import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
+import wseemann.media.FFmpegMediaPlayer;
+import wseemann.media.FFmpegMediaPlayer.OnCompletionListener;
+import wseemann.media.FFmpegMediaPlayer.OnErrorListener;
+import wseemann.media.FFmpegMediaPlayer.OnPreparedListener;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
@@ -88,7 +88,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     private LinkedList<String> tempFiles = null; // Temporary recording file name
     private String tempFile = null;
 
-    private MediaPlayer player = null;      // Audio player object
+    private FFmpegMediaPlayer player = null;      // Audio player object
     private boolean prepareOnly = true;     // playback after file prepare flag
     private int seekOnPrepared = 0;     // seek to this location once media is prepared
 
@@ -353,9 +353,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Callback to be invoked when playback of a media source has completed.
      *
-     * @param player           The MediaPlayer that reached the end of the file
+     * @param player           The FFmpegMediaPlayer that reached the end of the file
      */
-    public void onCompletion(MediaPlayer player) {
+    public void onCompletion(FFmpegMediaPlayer player) {
         Log.d(LOG_TAG, "on completion is calling stopped");
         this.setState(STATE.MEDIA_STOPPED);
     }
@@ -426,9 +426,9 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     /**
      * Callback to be invoked when the media source is ready for playback.
      *
-     * @param player           The MediaPlayer that is ready for playback
+     * @param player           The FFmpegMediaPlayer that is ready for playback
      */
-    public void onPrepared(MediaPlayer player) {
+    public void onPrepared(FFmpegMediaPlayer player) {
         // Listen for playback completion
         this.player.setOnCompletionListener(this);
         // seek to any location received while not prepared
@@ -463,11 +463,11 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * Callback to be invoked when there has been an error during an asynchronous operation
      *  (other errors will throw exceptions at method call time).
      *
-     * @param player           the MediaPlayer the error pertains to
+     * @param player           the FFmpegMediaPlayer the error pertains to
      * @param arg1              the type of error that has occurred: (MEDIA_ERROR_UNKNOWN, MEDIA_ERROR_SERVER_DIED)
      * @param arg2              an extra code, specific to the error.
      */
-    public boolean onError(MediaPlayer player, int arg1, int arg2) {
+    public boolean onError(FFmpegMediaPlayer player, int arg1, int arg2) {
         Log.d(LOG_TAG, "AudioPlayer.onError(" + arg1 + ", " + arg2 + ")");
 
         // TODO: Not sure if this needs to be sent?
@@ -551,7 +551,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
             switch (this.state) {
                 case MEDIA_NONE:
                     if (this.player == null) {
-                        this.player = new MediaPlayer();
+                        this.player = new FFmpegMediaPlayer();
                     }
                     try {
                         this.loadAudioFile(file);
@@ -573,7 +573,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                     if (this.audioFile.compareTo(file) == 0) {
                         //maybe it was recording?
                         if(this.recorder!=null && player==null) {
-                            this.player = new MediaPlayer();
+                            this.player = new FFmpegMediaPlayer();
                             this.prepareOnly = false;
 
                             try {
